@@ -470,22 +470,22 @@ Finally, we note that an experimental effort that accurately maps cold flow rate
 \subsection{Quality factor}
 \label{sec:qf}
 
-The relation between warm flow impedance and superfluid flow presented above can be useful. However, we need to be able to gauge capillary health with the flight cryostat parked at 80\,K just before we intend to fill the main tank with helium. Here, things get a bit more complicated because the temperature profile of the capillaries, and therefore the temperature of the main tank and the superfluid tank have a non-negligible effect on the outcome of any flow test. Of course, our flow tests are performed by measuring pressure rise in a 300\,K volume that is isobaric to another volume wherein gas resides at a much lower temperature. All of this information should somehow be factored into physically motivated estimator that correlates with measured superfluid flow rates.
+The relation between warm flow impedance and superfluid flow presented above can be useful. However, we need to be able to gauge capillary health with the flight cryostat parked at 80\,K just before we intend to fill the main tank with helium. Here, things get a bit more complicated because the temperature profile of the capillaries, and therefore the temperature of the main tank and the superfluid tank are expected to have a non-negligible effect on the outcome of any flow test. Of course, our flow tests are performed by measuring pressure rise in a 300\,K volume that is isobaric to another volume wherein gas (presumably) resides at a much lower temperature. All of this information should somehow be factored into physically motivated estimator that correlates with measured superfluid flow rates with the cryostat at equilibrium temperatures.
 
 Unfortunately, we have limited data that we can justify using as a training set for our model. Only data from runs 11, 13, and 14 are suitable for this purpose. Using those data, we derive a dimensionless quality factor, $Q$, that scales linearly with observed superfluid flow. The physically motivated parametrization goes as
 \begin{align}
 Q &\equiv \frac{\eta (T_\mrm{cap})}{\Delta P} \frac{V_\mrm{SFT}+V_\mrm{man}}{T_\mrm{eff}} \left( \frac{d p}{d t} \right), \\
 T_\mrm{eff} &\equiv \frac{\alpha T_\mrm{SFT}+T_\mrm{room}}{1+\alpha},
 \end{align}
-where $V_\mrm{SFT}$ and $V_\mrm{man}$ represent the volume of the superfluid tank and the outside manifold, respectively, $\Delta P$ is the pressure differential between the main tank and superfluid tank, $\eta$ is the effective dynamic viscosity of the gas traveling through capillaries at temperature $T_\mrm{cap}$, $T_\mrm{SFT}$ is the average temperature of the superfluid tank, $T_\mrm{room}$ is the room temperature, and $(d p/d t)$ is the rate of pressure increase in the superfluid tank during the flow test. Finally, $\alpha$ is a parameter that we use to fit our model to the realized behavior. In our system, we find that setting $\alpha \approx 0.5$ maximizes the correlation between $Q$ and realized flow rates.
+where $V_\mrm{SFT}$ and $V_\mrm{man}$ represent the volume of the superfluid tank and the outside manifold, respectively, $\Delta P$ is the pressure differential between the main tank and superfluid tank, $\eta$ is the effective dynamic viscosity of the gas traveling through capillaries at temperature $T_\mrm{cap}$, $T_\mrm{SFT}$ is the average temperature of the superfluid tank, $T_\mrm{room}$ is the room temperature, and $(d p/d t)$ is the rate of pressure increase in the superfluid tank during the flow test. Finally, $\alpha$ is a parameter that we use to fit our model to the realized behavior. In our system, we find that setting $\alpha \approx 0.2$ maximizes the correlation between $Q$ and realized flow rates (see further discussion in Section \ref{sec:qmotivation}).
 
 Figure \ref{fig:quality_factor} shows the superfluid flow rate as a function of the quality factor as calculated from 80\,K flow tests. On average, the quality factor mirrors the realized flow rates. This relationship should hold for future cooldowns as long as the warm flow impedance of the capillary assembly stays within the range that we have probed so far. The best fit linear relationship is 
 \begin{equation}
-f_\mrm{SFT} = 0.863 \times Q \quad [\mrm{SLPM}].
+f_\mrm{SFT} = 0.965 \times Q \quad [\mrm{SLPM}].
 \end{equation}
 By calculating the quality factor, we can forecast the cooling power of the capillary system and determine whether the cryostat is ready to be filled with liquid helium.\footnote{The initial helium fill is time consuming. The process normally starts in the early morning and is rarely over at a reasonable hour. The ability to quickly ascertain the health of the capillaries is essential.}
 
-Finally, we note that the quality factor for runs 14, 15, 16, and Run 2 in the new flight cryostat was measured to be 1.96, 2.10, 1.92, and 1.66, respectively. This corresponds to a superfluid flow rate of 1.7, 1.8, 1.7, and 1.4\,SLPM, respectively. An equilibrium flow rate of 1.4\,SLPM corresponds to a cooling power of 47\,mW. This doesn't leave much margin for error.
+Finally, we note that the quality factor for runs 14, 15, 16, and Run 2 in the new flight cryostat was measured to be 1.93, 2.13, 1.77, and 1.66, respectively. This corresponds to a superfluid flow rate of 1.9, 2.1, 1.7, and 1.6\,SLPM, respectively. An equilibrium flow rate of 1.6\,SLPM corresponds to a cooling power of 54\,mW. This doesn't leave much margin for error.
 
 \begin{figure*}[t]
 \begin{center}
@@ -496,12 +496,13 @@ Finally, we note that the quality factor for runs 14, 15, 16, and Run 2 in the n
 \end{figure*} 
 
 \subsection{Rough motivation for validity of quality factor}
+\label{sec:qmotivation}
 
 For a fixed volume and temperature, the ideal gas equation tells us that 
 \begin{equation}
 \frac{dp}{dt} = \frac{dn}{dT} \left(\frac{RT}{V} \right),
 \end{equation}
-where $R = 8.31\,\mrm{J/K/mole}$ is the gas constant. Since the molecular flow through the capillaries is filling two isobaric volumes, the SFT and the outside manifold, we know that the pressure in the two volumes is equal, $p_1(t)=p_2(t)$. This also means that for any time $t$
+where $R = 8.31\,\mrm{J/K/mole}$ is the gas constant. Since the molecular flow through the capillaries is filling two isobaric volumes, the SFT and the outside manifold, we know that the pressure in the two volumes is equal, $p_1(t)=p_2(t)$ (neglecting any small flow from the SFT to the manifold). This also means that for any time $t$
 \begin{equation}
 \frac{n_1 (t) RT_1}{V_1} = \frac{n_2 (t) RT_2}{V_2}.
 \end{equation}
@@ -511,12 +512,12 @@ From this we can see that
 \end{equation}
 and therefore
 \begin{align}
-\frac{d n}{dt} &= \frac{d}{dt}(n_1+n_2) \nonumber \\ 
-&= \left( 1 + \frac{V_1T_2}{V_2T_1} \right) \frac{dn_2}{dt} \nonumber \\
-&= \left( \frac{V_2}{RT_2} + \frac{V_1}{RT_1} \right) \frac{dp}{dt}
+\frac{d n}{dt} &= \frac{d}{dt}(n_1+n_2), \nonumber \\ 
+&= \left( 1 + \frac{V_1T_2}{V_2T_1} \right) \frac{dn_2}{dt}, \nonumber \\
+&= \left( \frac{V_2}{RT_2} + \frac{V_1}{RT_1} \right) \frac{dp}{dt}.
 \label{eq:dndt}
 \end{align}
-where in the last step we simply used the fact that
+Where in the last step we simply used the fact that
 \begin{equation}
 \frac{dn_2}{dt} = \frac{V_2}{RT_2} \frac{dp_2}{dt}.
 \end{equation}
@@ -527,9 +528,9 @@ Q \frac{\Delta P}{\eta} = \left(\frac{V_1}{RT_1} + \frac{V_2}{RT_2} \right) \fra
 \end{equation}
 where $Q$ is some constant with strange units. Rearranging, we arrive at the following expression
 \begin{equation}
-Q = \frac{\eta }{\Delta P} \left( \frac{V_\mrm{SFT}}{RT_\mrm{SFT}}+\frac{V_\mrm{man}}{RT_\mrm{man}} \right) \left( \frac{d p}{d t} \right).
+Q = \frac{\eta }{\Delta P} \left( \frac{V_\mrm{SFT}}{RT_\mrm{SFT}}+\frac{V_\mrm{man}}{RT_\mrm{man}} \right) \left( \frac{d p}{d t} \right),
 \end{equation}
-where we have assigned the indices 1 and 2 to the SFT and manifold, respectively. This expression seems physically motivated, but unfortunately, it doesn't seem to fit our data very well. Instead, we use a slightly different version, namely
+where we have assigned the indices 1 and 2 to the SFT and manifold, respectively. This expression seems physically motivated, but unfortunately, it doesn't seem to fit our data very well. Instead, we find that a slightly different version works much better, namely
 \begin{equation}
 Q = \frac{\eta }{\Delta P}\frac{V_\mrm{SFT}+V_\mrm{man}}{RT_\mrm{eff}} \left( \frac{d p}{d t} \right),
 \label{eq:q}
@@ -538,7 +539,7 @@ with
 \begin{equation}
 T_\mrm{eff} \equiv \frac{\alpha T_\mrm{SFT}+T_\mrm{room}}{1+\alpha}.
 \end{equation}
-We find that a very large value of $\alpha$ tends to yield the best agreement with observations, suggesting that the effective temperature that we should use in the above expression is that of the SFT. 
+We find that a relatively small value of $\alpha$ tends to yield the best agreement with observations, suggesting that the effective temperature that we should use in the above expression is that of the manifold (close to 300\,K). Similar analysis suggests that the temperature used for calculating the effective dynamic viscosity should be that of the superfluid tank and not some geometrical average of the temperature of the main tank and superfluid tank.
 
 %, and assumed that there exists a temperature  $T_\mrm{eff}$ such that
 %\begin{equation}
@@ -555,7 +556,7 @@ When comparing flow through two capillary systems with different physical proper
 
 %Thermometers along the superfluid tank allow us to monitor the temperature profile of the superfluid tank, and to some extent, gauge the superfluid liquid level inside the tank (see Figure~\ref{fig:sft_hist}). %The equilibrium flow rate is continuously monitored using flow meters calibrated for low flow rates which we install on the exhaust of our scroll pumps.\footnote{\textit{Omega Engineering Inc.}, Stamford, CT.}
 
-Thermometers along the superfluid tank allows us to monitor the temperature profile of the superfluid tank and to some extent gauge the superfluid liquid level inside the tank. Measurements show that the capillary box is at an elevated temperature with respect to the rest of the superfluid assembly even though it is at the lowest gravitational potential. We have also observe periodic temperature oscillations at 10-100~mHz which have hitherto not been given a good explanation.
+Thermometers along the superfluid tank allows us to monitor the temperature profile of the superfluid tank and to some extent gauge the superfluid liquid level inside the tank (see Figure \ref{fig:sft_hist}). Measurements show that the capillary box is at an elevated temperature with respect to the rest of the superfluid assembly even though it is at the lowest gravitational potential. We have also observe periodic temperature oscillations at 10-100~mHz which have hitherto not been given a good explanation.
 
 \begin{figure*}[t]
 \begin{center}
