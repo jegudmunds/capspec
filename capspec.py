@@ -72,10 +72,10 @@ class FlowMeas():
         atm1 = 760.0
         return 1e3*(self.Vsft+self.Vman)*self.dp/(60*self.dt)/atm1
 
-    def get_Q(self, a=0.5, b=1.0):
+    def get_Q(self, a=0.5, b=10.0):
         self.set_Q(a,b); return self.Q
 
-    def get_eta(self, b=1.0):
+    def get_eta(self, b=10.0):
         '''
         Calculates the viscosity given some gas type
         '''
@@ -296,13 +296,10 @@ l2_warm2 = FlowMeas(116.87, 175, 14.7, 295, 295, 295, Vsft=6.464,
 l2_cold1 = FlowMeas(22.2, 50, 15.7, 290, 290, 290, Vsft=6.464,
     Vman=1.0, gas='He')
 
-Q15_1 = r15_cold1.get_Q(a=0.47,b=5.0)
-Q15_2 = r15_cold2.get_Q(a=0.47,b=5.0)
-Q16_1 = r16_cold1.get_Q(a=0.47,b=5.0)
-Q2_1 = l2_cold1.get_Q(a=0.47,b=5.0)
-
-#Q = np.append(Q,Q14)
-#Qf = np.append(Qf,Q14/1.67)
+Q15_1 = r15_cold1.get_Q(a=0.223,b=10.0)
+Q15_2 = r15_cold2.get_Q(a=0.223,b=10.0)
+Q16_1 = r16_cold1.get_Q(a=0.223,b=10.0)
+Q2_1 = l2_cold1.get_Q(a=0.223,b=10.0)
 
 print('Quality factor from last few runs:')
 print('  Q14:  \t{:5.2f}'.format(Q14))
@@ -311,80 +308,39 @@ print('  Q15_2:  \t{:5.2f}'.format(Q15_2))
 print('  Q16:  \t{:5.2f}'.format(Q16_1))
 print('  Q2 (cold):  \t{:5.2f}\n\n'.format(Q2_1))
 
-###
-### Plotting the Qualify factor
-###
-plot(1+np.arange(len(Q)),Q,marker='*',lw=0,ms=12,markeredgecolor='black',
-     markerfacecolor='None')
-locs, labels = xticks()
-xlim([0, len(Q)+1])
-labels2use = ['R11','R13a','R13a','R13a','R13a','R13b','R14']
-ax = gca()
-ax.set_xticks(locs)
-ax.set_xticklabels(labels2use)
-xlabel('Run')
-
-# The quality factor is essentially the predicted flow
-ylabel('Predicted Flow [SLPM]')
-ylim([0.5, 3.5])
-savefig('img/predicted_flow.png',figsize=(8, 6), dpi=200)
-close()
 
 ###
-### Plotting the ratio of predicted to realized flow
+### Plotting the Q variation as a function of alpha
 ###
-plot(1+np.arange(len(Qf)),Qf,marker='*',lw=0,ms=12,markeredgecolor='black',
-     markerfacecolor='None')
-locs, labels = xticks()
-xlim([0, len(Q)+1])
-labels2use = ['R11','R13a','R13a','R13a','R13a','R13b','R14']
-ax = gca()
-ax.set_xticks(locs)
-ax.set_xticklabels(labels2use)
-xlabel('Run'); ylabel('$f_\mathrm{pred}/f_\mathrm{rel}$')
-savefig('img/flow_ratio.png',figsize=(8, 6), dpi=200)
-close()
+N0 = 10
+N1 = 1000
 
-###
-### Plotting the predicted versus realized flow
-###
-plot(2.5/3.1*Q, coldflows, marker='*',
-    lw=0, ms=12,markeredgecolor='black',
-     markerfacecolor='None')
-locs, labels = xticks()
-ax = gca()
-xlim([0.0, 3.0]); ylim([0.0, 3.0])
-xlabel('Predicted flow [SLPM]');
-ylabel('Realized flow [SLPM]')
-savefig('img/flow_vs_pred.png',figsize=(8, 6), dpi=200)
-close()
+beta = np.linspace(2, 20., N0)
+alpha = np.linspace(0.0,2.0,N1)
 
-run_norm = (run-np.min(run))/(np.max(run)-np.min(run))
-scatter(2.5/3.1*Q, coldflows, c=run_norm, s=100, cmap='summer',
-    edgecolor='black')
-colorbar()
+cmap = get_cmap('RdYlBu', N0)
+cmaplist = [cmap(i) for i in range(cmap.N)]
 
-xlim([0.0, 3.0]); ylim([0.0, 3.0])
-axis('equal')
-xlabel('Predicted flow [SLPM]');
-ylabel('Realized flow [SLPM]')
-savefig('img/flow_vs_pred2.png',figsize=(8, 6), dpi=200)
-close()
+import seaborn as sn
+sn.set()
+for i, b in enumerate(beta):
+    val = np.zeros(np.shape(alpha))
+    for idx, a in enumerate(alpha):
+        val[idx] = f2min([a, b])
 
-###
-### Plotting the Qf variation as a function of alpha
-###
-N = 1000
-alpha = np.linspace(0.2,10.0,N)
-val = np.zeros(np.shape(alpha))
-for idx, a in enumerate(alpha):
-    val[idx] = f2min([a, 10.0])
+    plot(alpha, val, label='beta {:5.1f}'.format(b), color=cmaplist[i])
 
-plot(alpha, val,lw=0,marker='.')
 xlabel('a')
 ylabel('Residual')
-savefig('img/average_variation.png')
+legend(loc=2)
+savefig('img/parameter_variation.png')
 close()
+
+sn.reset_orig()
+
+###
+### Plotting the cold flow rate as a function warm flow impedance
+###
 
 nlev = 5
 levels = np.linspace(0.01,1.0,nlev)
@@ -402,9 +358,6 @@ impedance = np.array([36, 47, 49, 59, 55.5])
 r0 = int(np.min(run))
 rd = int(np.max(run)-np.min(run))+1
 
-figure(figsize=(6,3))
-
-
 z = np.polyfit(impedance[:-1], coldflows[:-1], 1)
 f = np.poly1d(z)
 impi = np.linspace(0.9*np.min(impedance), 1.1*np.max(impedance), 50)
@@ -413,6 +366,7 @@ coldi = f(impi)
 print 'Best fit linear model:'
 print f
 
+figure(figsize=(6,3))
 scatter(impedance, coldflows, c=run, s=50,
     cmap=discrete_cmap(rd, 'RdYlBu'), edgecolor='black')
 
@@ -424,12 +378,11 @@ cbar.set_ticklabels(['Run 10','Run 11','Run 12','Run 13','Run 14','Run 2'])
 
 xlabel('Flow impedance [cm$^{-3}$]')
 ylabel('Capillary cold flow rate [SLPM]')
-savefig('img/impedance_vs_cold.png',dpi=200,
-    bbox_inches='tight')
+savefig('img/impedance_vs_cold.png', dpi=200, bbox_inches='tight')
 close()
 
 ###
-### Plotting the sfd
+### Plotting the cold flow rate as a function of quality function
 ###
 
 labels2use = ['R11','R13a','R13a','R13a','R13a','R13b','R14']
@@ -439,7 +392,7 @@ run, ftlist, volumetric, coldflows, warm_run, warmlist, \
 
 # Calculating warm quality factor for kicks
 #Q = [ft.get_Q(a=0.51,b=10.0) for ft in ftlist]; Q = np.array(Q)
-Q = [ft.get_Q(a=1., b=37.) for ft in ftlist]; Q = np.array(Q)
+Q = [ft.get_Q(a=0.223, b=10.) for ft in ftlist]; Q = np.array(Q)
 Qf = Q/coldflows
 
 run = np.array([11, 13, 13, 13, 13, 13, 14])
@@ -472,42 +425,33 @@ savefig('img/q_vs_cold.png', dpi=200, bbox_inches='tight')
 close()
 
 ###
-### Some crude minimization routine
+### Mapping the 2D parameter space
 ###
-
-a0 = 0.3; b0 = 1.0
-bnds = ((0.2,5.0), (0.2,10.0))
-#print len(bnds)
-x0 = [a0, b0]
-#res = minimize(f2min,(a0,b0),method='L-BFGS-B',bounds=bnds)
-res = minimize(f2min, x0, method='L-BFGS-B', bounds=bnds)
-print res
-print res.x
-print f2min(res.x)/len(Q)
-
-## Mapping the 2D parameter space
 N = 80
-a1, a2 = 0.1, 10.
-#b1, b2 = 39.0, 40.
-b1, b2 = 1., 10.
+a1, a2 = 0.01, 1.
+b1, b2 = 0.01, 10.
 
 alpha = np.linspace(a1, a2, N)
 beta = np.linspace(b1, b2, N)
 resid = np.zeros((N,N))
-
 for i in xrange(N):
     for j in xrange(N):
         resid[i,j] = f2min([alpha[i], beta[j]])
 
-#imshow(resid, extent=[a1, a2, b1, b2], cmap='RdYlBu',
-#    aspect='auto',vmin=resid.min(), vmax=0.2)
-imshow(resid, extent=[a1, a2, b1, b2], cmap='RdYlBu',
-    aspect='auto')
+idxs = np.unravel_index(np.argmin(resid), np.shape(resid))
+
+print 'The local minimum is:'
+print idxs
+print 'alpha = {:5.3f}'.format(alpha[idxs[0]])
+print 'beta = {:5.3f}'.format(beta[idxs[1]])
+
+imshow(resid, extent=[b1, b2, a1, a2], cmap='RdYlBu',
+    aspect='auto', origin='lower')
 
 colorbar()
-xlabel('alpha')
-ylabel('beta')
-savefig('img/brute_force.png')
+xlabel('beta')
+ylabel('alpha')
+savefig('img/parameter_search.png')
 close()
 
 

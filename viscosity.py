@@ -1,9 +1,15 @@
 import numpy as np
-import pdata as pd
 from matplotlib import pyplot as plt
 
 # Remember that an often used unit for visosity is the 'Poise' = g/cm/s
 # However, the SI unit for viscosity is (Pa s) but one (Pa s) = 10 Poise
+
+def extrap(x, xp, yp):
+    """np.interp function with linear extrapolation"""
+    y = np.interp(x, xp, yp)
+    y = np.where(x<xp[0], yp[0]+(x-xp[0])*(yp[0]-yp[1])/(xp[0]-xp[1]), y)
+    y = np.where(x>xp[-1], yp[-1]+(x-xp[-1])*(yp[-1]-yp[-2])/(xp[-1]-xp[-2]), y)
+    return y
 
 def eta_he(T):
     # See Amdur1947
@@ -15,7 +21,7 @@ def eta_he(T):
     eta0 = np.append(eta0,19)
     eta0 = eta0*1e-6
     T0 = np.append(T0,300)
-    eta_he = pd.extrap(T,T0,eta0)
+    eta_he = extrap(T,T0,eta0)
     return eta_he
 
 def eta_n2(T):
@@ -24,7 +30,7 @@ def eta_n2(T):
     eta0 = np.array([8.24, 8.85, 9.45, 10.05, 12.88, 15.48, 17.90])
     T0 = np.array([120, 130, 140, 150, 200, 250, 300])
     eta0 = eta0*1e-6
-    eta_n2 = pd.extrap(T,T0,eta0)
+    eta_n2 = extrap(T,T0,eta0)
     return eta_n2
 
 if __name__ == "__main__":
