@@ -246,10 +246,10 @@ run, ftlist, volumetric, coldflows, warm_run, warmlist,\
     warm_volumetric = genlist()
 
 # Calculating warm quality factor for kicks
-Q_warm = [ft.get_Q(a=0.51,b=10.0) for ft in warmlist];
+Q_warm = [ft.get_Q(a=0.22,b=10.0) for ft in warmlist];
 
 #Q = [ft.get_Q(a=0.51,b=10.0) for ft in ftlist]; Q = np.array(Q)
-Q = [ft.get_Q(a=0.51,b=5.0) for ft in ftlist]; Q = np.array(Q)
+Q = [ft.get_Q(a=0.22,b=5.0) for ft in ftlist]; Q = np.array(Q)
 Qf = Q/coldflows
 
 print('Run:\t |' + '\t|'.join(['{:d}'.format(int(r)) for r in run]))
@@ -268,8 +268,7 @@ Qf_mean = np.mean(Qf); Qf_std = np.std(Qf)
 print('\nMean quality factor: {:5.2f} '.format(Qf_mean))
 print('STD of quality factor: {:5.2f} \n'.format(Qf_std))
 
-#r14_cold1 = FlowMeas(6.72,50,15.7,88,270,95,
-#                     date=dt.datetime(2014,3,27,17,13),gas='He')
+# Copied from genlist
 r14_cold1 = FlowMeas(7.75,49,15.7,88,270,95,
                      date=dt.datetime(2014,3,27,17,13),gas='He')
 
