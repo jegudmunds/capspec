@@ -28,12 +28,18 @@ def discrete_cmap(N, base_cmap=None):
 
 class FlowMeas():
     '''
-    The flow rate class
+    Flow measurement class
     '''
 
-    def __init__(self,dp,dt,DeltaP,Tmt,Tcap,Tsft,
-                 name=None,date=None,gas=None,eta=None,
-                 Vsft=18.0,Vman=2.0,Troom=300.):
+    def __init__(self, dp, dt, DeltaP=15.7, Tmt=300, Tcap=300, Tsft=300,
+                 name=None, date=None, gas=None, eta=None,
+                 Vsft=18.0, Vman=2.0, Troom=300.):
+
+        '''
+        It is important that the class be instantiated with the proper units .
+        (see comments below). Numbers will be meaningless if not input 
+        according to the conventions shown below.
+        '''
 
         self.dp = dp+1.0 # Pressure increase [torr]
         self.dt = dt # Integration time [min]
@@ -55,6 +61,7 @@ class FlowMeas():
         '''
         Calculates the quality factor derived from this flow measurement
         '''
+
         self.get_eta(b)
         T = (a*self.Tsft+self.Troom)/(1+a)
         self.Q = 1e9*(self.dp/self.dt)*((self.Vsft/T+ \
@@ -96,9 +103,9 @@ class FlowMeas():
 
 def genlist():
     '''
-    This function contains all flow measurements that we have performed.
-    It's a silly way to keep track of things, but haven't got a more
-    elegant solution. The function generates a list of FlowMeas objects that
+    This function should contain all flow measurements that we have performed.
+    It's a silly way to keep track of things, but I haven't come up with a 
+    more elegant solution. The function generates a list of FlowMeas objects that
     containt measurements from various runs in the past.
 
     Return:
@@ -109,30 +116,31 @@ def genlist():
 
     ## Run 10
     # This was the first run with current capillary assembly design
-    # We used
 
     ## Run 11
     # Warm measurement
-    r11_warm = FlowMeas(26.0,87,15.7,300,300,300,date=dt.datetime(2012,10,20))
+    r11_warm = FlowMeas(26.0, 87, DeltaP=15.7, Tmt=300, Tcap=300,
+                        Tsft=300, date=dt.datetime(2012,10,20))
     # 77K measurement
     # Verify temperatures
-    r11_cold0 = FlowMeas(17.0,36,15.2,85,90,90,
-        date=dt.datetime(2012,11,16),gas='He')
+    r11_cold0 = FlowMeas(17.0, 36, DeltaP=15.2, Tmt=85, Tcap=90, Tsft=90,
+                        date=dt.datetime(2012,11,16), gas='He')
 
     ## Run 12
     # Warm measurement
     # Made up values for dp/dt. Only have that flow = 13.1e-2 cm^3/s
-    r12_warm = FlowMeas(27.5,87,15.7,300,300,300,date=dt.datetime(2012,10,20))
+    r12_warm = FlowMeas(27.5, 87, DeltaP=15.7, Tmt=300, Tcap=300, Tsft=300,
+                        date=dt.datetime(2012,10,20))
     # 77K measurement
-    r12_cold0 = FlowMeas(5.5,16,15.7,85,85,90,
-        date=dt.datetime(2013,2,28),gas='He')
-
+    r12_cold0 = FlowMeas(5.5, 16, DeltaP=15.7, Tmt=85, Tcap=85, Tsft=90,
+                        date=dt.datetime(2013,2,28), gas='He')
 
     # Why did we never get a flow rate measurement for
 
     ## Run 13
     # Warm measurement
-    r13_warm = FlowMeas(46.0,169,15.7,300,300,300,date=dt.datetime(2013,6,6))
+    r13_warm = FlowMeas(46.0, 169, DeltaP=15.7, Tmt=300, Tcap=300, Tsft=300,
+                        date=dt.datetime(2013,6,6))
     # 77K measurement
 
     # We never really got cold enough to characterize capillary perforance
@@ -141,59 +149,72 @@ def genlist():
 
     # Once we got rid of the MT vent constriction we performed a series of
     # flow tests
-    r13_cold1 = FlowMeas(14.5,63,14.7,11,42,35,
-                         date=dt.datetime(2013,6,29,8,55),gas='He')
-    r13_cold2 = FlowMeas(8.5,55,14.7,11,104,36,
-                         date=dt.datetime(2013,6,29,9,56),gas='He')
-    r13_cold3 = FlowMeas(11.0,120,14.7,12,156,37,
-                         date=dt.datetime(2013,6,29,11,18),gas='He')
-    r13_cold4 = FlowMeas(11.0,120,14.7,13.5,148,40,
-                         date=dt.datetime(2013,6,29,13,41),gas='He')
+    r13_cold1 = FlowMeas(14.5, 63, DeltaP=14.7, Tmt=11, Tcap=42, Tsft=35,
+                        date=dt.datetime(2013,6,29,8,55), gas='He')
+    r13_cold2 = FlowMeas(8.5, 55, DeltaP=14.7, Tmt=11, Tcap=104, Tsft=36,
+                        date=dt.datetime(2013,6,29,9,56), gas='He')
+    r13_cold3 = FlowMeas(11.0, 120, DeltaP=14.7, Tmt=12, Tcap=156, Tsft=37,
+                        date=dt.datetime(2013,6,29,11,18), gas='He')
+    r13_cold4 = FlowMeas(11.0, 120, DeltaP=14.7, Tmt=13.5, Tcap=148, Tsft=40,
+                        date=dt.datetime(2013,6,29,13,41), gas='He')
 
     # We decided to warm up to see if increased flow rate through capillaries
     # could help with the burp events, we were successful in getting the flow
     # to go up but it didn't help with the burps
-    r13_cold5 = FlowMeas(12.8,78,15.7,95,262,92,
-                         date=dt.datetime(2013,7,14,18,25),gas='He')
+    r13_cold5 = FlowMeas(12.8, 78, DeltaP=15.7, Tmt=95, Tcap=262, Tsft=92,
+                        date=dt.datetime(2013,7,14,18,25), gas='He')
 
     # Measured on Feb 27, based on logbook entry
-    r14_warm1 =  FlowMeas(53.2,238,15.7,290,290,290,
-                         date=dt.datetime(2014,2,27,21,59),gas='He')
+    r14_warm1 =  FlowMeas(53.2, 238, DeltaP=15.7, Tmt=290, Tcap=290, Tsft=290,
+                        date=dt.datetime(2014,2,27,21,59), gas='He')
 
     # Measured on Mar 27 2014
-    r14_cold1 = FlowMeas(7.75,49,15.7,88,270,95,
-                         date=dt.datetime(2014,3,27,17,13),gas='He')
+    r14_cold1 = FlowMeas(7.75, 49, DeltaP=15.7, Tmt=88, Tcap=270, Tsft=95,
+                        date=dt.datetime(2014,3,27,17,13), gas='He')
 
     # Measured on Jul 2 2014
     #dp = 0.13 psi = 6.7 torr, dt = 34 min,
-    r15_warm1 = FlowMeas(13.4,68,14.8,300,300,300,date=dt.datetime(2014,7,2),
-                         gas='N2')
+    r15_warm1 = FlowMeas(13.4, 68, DeltaP=14.8, Tmt=300, Tcap=300, Tsft=300,
+                        date=dt.datetime(2014,7,2), gas='N2')
 
-    r15_cold1 = FlowMeas(8.4,48,15.7,89,220,94,
-                         date=dt.datetime(2014,7,6,13,12),gas='He')
-    r15_cold2 = FlowMeas(5.51,27,15.86,90,221,100,
-                         date=dt.datetime(2014,7,6,13,12),gas='He')
+    r15_cold1 = FlowMeas(8.4, 48, DeltaP=15.7, Tmt=89, Tcap=220, Tsft=94,
+                        date=dt.datetime(2014,7,6,13,12), gas='He')
+
+    r15_cold2 = FlowMeas(5.51, 27, DeltaP=15.86, Tmt=90, Tcap=221, Tsft=100,
+                        date=dt.datetime(2014,7,6,13,12), gas='He')
 
     # Measured on Nov 4 2014
-    r16_warm1 = FlowMeas(19.5,101.5,15.1,295,295,295,
-        date=dt.datetime(2014,11,4), gas='N2')
+    r16_warm1 = FlowMeas(19.5, 101.5, DeltaP=15.1, Tmt=295, Tcap=295, Tsft=295,
+                        date=dt.datetime(2014,11,4), gas='N2')
     # Measured on Nov 5 2014 (on the ice)
-    r16_warm2 = FlowMeas(17.9,96,15.1,295,295,295,date=dt.datetime(2014,11,5),
-                         gas='N2')
+    r16_warm2 = FlowMeas(17.9, 96, DeltaP=15.1, Tmt=295, Tcap=295, Tsft=295,
+                        date=dt.datetime(2014,11,5), gas='N2')
 
-    r16_cold1 = FlowMeas(8.4,48,15.7,97,274,96,
-                         date=dt.datetime(2014,11,25,14,45),gas='He')
+    # r16_cold1 = FlowMeas(8.4, 48, DeltaP=15.7, Tmt=97, Tcap=274, Tsft=96,
+    #                     date=dt.datetime(2014,11,25,14,45), gas='He')
+
+    r16_cold1 = FlowMeas(7.75, 50, DeltaP=15.86, Tmt=97, Tcap=280, Tsft=96,
+                     date=dt.datetime(2014,11,25,14,45), gas='He')
+
 
     # Measured in the lab prior to installing in Lloro
-    l2_warm1 = FlowMeas(103.43,11.88,16.69,295,295,295,
-        date=dt.datetime(2017,4,1), gas='N2',Vsft=0.,Vman=0.580,Troom=295.)
+    l2_warm1 = FlowMeas(103.43, 11.88, DeltaP=16.69, Tmt=295, Tcap=295, Tsft=295,
+                        date=dt.datetime(2017,4,1), gas='N2', 
+                        Vsft=0., Vman=0.580, Troom=295.)
 
     # Measurements in Lloro after closeup (warm)
-    l2_warm2 = FlowMeas(116.87, 175, 14.7, 295, 295, 295, Vsft=6.464,
-        Vman=0.5, gas='N2')
+    l2_warm2 = FlowMeas(116.87, 175, DeltaP=14.7, Tmt=295, Tcap=295, Tsft=295, 
+                        Vsft=6.464, Vman=0.5, gas='N2')
 
-    l2_cold1 = FlowMeas(22.2, 50, 15.7, 290, 290, 290, Vsft=6.464,
-        Vman=1.0, gas='He')
+    l2_cold1 = FlowMeas(22.2, 50, DeltaP=15.7, Tmt=80., Tcap=290, Tsft=290, 
+                        Vsft=6.464, Vman=1.0, gas='He')
+
+    l3_warm1 = FlowMeas(113, 175, DeltaP=16.69, Tmt=295, Tcap=295, Tsft=295,
+                        date=dt.datetime(2017,9,25), gas='N2', Vsft=6.464, 
+                        Vman=0.580, Troom=295.)
+
+    l3_cold1 = FlowMeas(15.5, 50, DeltaP=15.7, Tmt=80., Tcap=290, Tsft=290, 
+                        Vsft=6.464, Vman=0.5, gas='He')
 
     # Warm (~300 K) flow measurements
     warm_run = np.array([11, 12, 13, 14, 15, 16, 2])
@@ -235,7 +256,7 @@ def f2min(x):
 ### ----------------------------------------------------------------------------
 
 
-print('\nQuality factor is a unitless parameter that is derived from LN2 flow rates ')
+print('\nQuality factor is a number that is calculated from 80 K flow tests. ')
 print('The parameters used to calculate the quality factor have been tweaked so that ')
 print('the quality factor roughly maps to cold flow rate in SLPM. Note that Q/f from')
 print('runs 11, 13, and 14 is 1.2 on average.\n')
@@ -246,7 +267,7 @@ run, ftlist, volumetric, coldflows, warm_run, warmlist,\
     warm_volumetric = genlist()
 
 # Calculating warm quality factor for kicks
-Q_warm = [ft.get_Q(a=0.22,b=10.0) for ft in warmlist];
+Q_warm = [ft.get_Q(a=0.22, b=10.0) for ft in warmlist];
 
 #Q = [ft.get_Q(a=0.51,b=10.0) for ft in ftlist]; Q = np.array(Q)
 Q = [ft.get_Q(a=0.22,b=5.0) for ft in ftlist]; Q = np.array(Q)
@@ -268,45 +289,54 @@ Qf_mean = np.mean(Qf); Qf_std = np.std(Qf)
 print('\nMean quality factor: {:5.2f} '.format(Qf_mean))
 print('STD of quality factor: {:5.2f} \n'.format(Qf_std))
 
-# Copied from genlist
-r14_cold1 = FlowMeas(7.75,49,15.7,88,270,95,
-                     date=dt.datetime(2014,3,27,17,13),gas='He')
+# COPIED FROM GENLIST
+r14_cold1 = FlowMeas(7.75, 49, DeltaP=15.7, Tmt=88, Tcap=270, Tsft=95,
+                        date=dt.datetime(2014,3,27,17,13), gas='He')
 
-Q14 = r14_cold1.get_Q(a=0.47,b=5.0)
-r15_cold1 = FlowMeas(8.4,48,15.7,89,220,94,
-                     date=dt.datetime(2014,7,6,13,12),gas='He')
-r15_cold2 = FlowMeas(5.51,27,15.86,90,221,100,
-                     date=dt.datetime(2014,7,6,13,12),gas='He')
 
-r16_cold1 = FlowMeas(8.4,48,15.7,97,274,96,
-                     date=dt.datetime(2014,11,25,14,45),gas='He')
+Q14 = r14_cold1.get_Q(a=0.47, b=5.0)
 
-r16_cold1 = FlowMeas(7.75,50,15.86,97,280,96,
-                     date=dt.datetime(2014,11,25,14,45),gas='He')
+r15_cold1 = FlowMeas(8.4, 48, DeltaP=15.7, Tmt=89, Tcap=220, Tsft=94,
+                    date=dt.datetime(2014,7,6,13,12), gas='He')
+
+r15_cold2 = FlowMeas(5.51, 27, DeltaP=15.86, Tmt=90, Tcap=221, Tsft=100,
+                    date=dt.datetime(2014,7,6,13,12), gas='He')
+
+r16_cold1 = FlowMeas(7.75, 50, DeltaP=15.86, Tmt=97, Tcap=280, Tsft=96,
+                    date=dt.datetime(2014,11,25,14,45), gas='He')
 
 # Measured in the lab prior to installing in Lloro
-l2_warm1 = FlowMeas(103.43,11.88,16.69,295,295,295,date=dt.datetime(2017,4,1),
-                     gas='N2',Vsft=0.,Vman=0.580,Troom=295.)
+l2_warm1 = FlowMeas(103.43, 11.88, DeltaP=16.69, Tmt=295, Tcap=295, Tsft=295,
+                    date=dt.datetime(2017,4,1), gas='N2', 
+                    Vsft=0., Vman=0.580, Troom=295.)
 
 # Measurements in Lloro after closeup (warm)
-l2_warm2 = FlowMeas(116.87, 175, 14.7, 295, 295, 295, Vsft=6.464,
-    Vman=0.5, gas='N2')
+l2_warm2 = FlowMeas(116.87, 175, DeltaP=14.7, Tmt=295, Tcap=295, Tsft=295, 
+                    Vsft=6.464, Vman=0.5, gas='N2')
 
-l2_cold1 = FlowMeas(22.2, 50, 15.7, 290, 290, 290, Vsft=6.464,
-    Vman=1.0, gas='He')
+l2_cold1 = FlowMeas(22.2, 50, DeltaP=15.7, Tmt=80., Tcap=290, Tsft=290, 
+                    Vsft=6.464, Vman=1.0, gas='He')
 
-Q15_1 = r15_cold1.get_Q(a=0.223,b=10.0)
-Q15_2 = r15_cold2.get_Q(a=0.223,b=10.0)
-Q16_1 = r16_cold1.get_Q(a=0.223,b=10.0)
-Q2_1 = l2_cold1.get_Q(a=0.223,b=10.0)
+l3_warm1 = FlowMeas(113, 175, DeltaP=16.69, Tmt=295, Tcap=295, Tsft=295,
+                    date=dt.datetime(2017,9,25), gas='N2', Vsft=6.464, 
+                    Vman=0.580, Troom=295.)
+
+l3_cold1 = FlowMeas(15.5, 50, DeltaP=15.7, Tmt=80.0, Tcap=290, Tsft=290, 
+                    Vsft=6.464, Vman=0.5, gas='He')
+
+Q15_1 = r15_cold1.get_Q(a=0.223, b=10.0)
+Q15_2 = r15_cold2.get_Q(a=0.223, b=10.0)
+Q16_1 = r16_cold1.get_Q(a=0.223, b=10.0)
+Q2_1 = l2_cold1.get_Q(a=0.223, b=10.0)
+Q3_1 = l3_cold1.get_Q(a=0.223, b=10.0)
 
 print('Quality factor from last few runs:')
 print('  Q14:  \t{:5.2f}'.format(Q14))
 print('  Q15_1:  \t{:5.2f}'.format(Q15_1))
 print('  Q15_2:  \t{:5.2f}'.format(Q15_2))
 print('  Q16:  \t{:5.2f}'.format(Q16_1))
-print('  Q2 (cold):  \t{:5.2f}\n\n'.format(Q2_1))
-
+print('  Q2 (cold):  \t{:5.2f}'.format(Q2_1))
+print('  Q3 (cold):  \t{:5.2f}\n\n'.format(Q3_1))
 
 ###
 ### Plotting the Q variation as a function of alpha
